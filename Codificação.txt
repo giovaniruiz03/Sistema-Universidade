@@ -80,3 +80,24 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+INSERT INTO tb_aluno (nome_aluno, sobrenome, matriculado) VALUES
+  ('João', 'Silva', 0),
+  ('Maria', 'Souza', 0),
+  ('Carlos', 'Andrade', 0);
+
+CALL inserir_curso('Engenharia Civíl', 'Engenharia');
+CALL inserir_curso('Engenharia da Computação', 'Engenharia');
+CALL inserir_curso('Biomedicina', 'Biológicas');
+
+CALL matricular_aluno(1, 1); -- João em Engenharia
+CALL matricular_aluno(2, 2); -- Maria em Engenharia da Computação
+CALL matricular_aluno(3, 3); -- Carlos em Biomedicina
+CALL matricular_aluno(1, 2); -- Tentar matricular João em Engenharia da Computação
+
+SELECT * FROM tb_aluno;
+
+SELECT * FROM tb_curso;
+
+SELECT * FROM tb_aluno_curso;
