@@ -1,0 +1,82 @@
+CREATE TABLE tb_aluno (
+  id_aluno INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nome_aluno VARCHAR(50) NOT NULL,
+  sobrenome VARCHAR(60) NOT NULL,
+  email VARCHAR(120) NOT NULL,
+  matriculado BIT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE tb_curso (
+  id_curso INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nome_curso VARCHAR(80) NOT NULL,
+  area_curso VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE tb_aluno_curso (
+  id_aluno INT NOT NULL,
+  id_curso INT NOT NULL,
+  PRIMARY KEY (id_aluno, id_curso),
+  FOREIGN KEY (id_aluno) REFERENCES tb_aluno (id_aluno),
+  FOREIGN KEY (id_curso) REFERENCES tb_curso (id_curso)
+);
+
+DELIMITER $$
+
+CREATE TRIGGER aluno_email_trigger
+BEFORE INSERT ON tb_aluno
+FOR EACH ROW
+BEGIN
+  SET NEW.email = CONCAT(NEW.nome_aluno, '.', NEW.sobrenome, '@facens.br');
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE inserir_curso (
+  IN nome_curso VARCHAR(80),
+  IN area_curso VARCHAR(60)
+)
+BEGIN
+  INSERT INTO tb_curso (nome_curso, area_curso) VALUES (nome_curso, area_curso);
+END $$
+
+DELIMITER $$
+
+CREATE FUNCTION obter_curso_por_nome (
+  nome_curso_param VARCHAR(80)
+)
+RETURNS INT
+BEGIN
+  RETURN (
+    SELECT id_curso
+    FROM tb_curso
+    WHERE nome_curso = nome_curso_param
+  );
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE matricular_aluno (
+  IN id_aluno INT,
+  IN id_curso INT
+)
+BEGIN
+  -- Verifica se o aluno já está matriculado no curso
+  IF (
+    SELECT COUNT(*)
+    FROM tb_aluno_curso
+    WHERE id_aluno = id_aluno
+    AND id_curso = id_curso
+  ) > 0 THEN
+    -- O aluno já está matriculado no curso
+    BEGIN
+    END;
+  ELSE
+    INSERT INTO tb_aluno_curso (id_aluno, id_curso) VALUES (id_aluno, id_curso);
+  END IF;
+END $$
+
+DELIMITER ;
