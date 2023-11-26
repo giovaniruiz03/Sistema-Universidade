@@ -19,6 +19,11 @@ Tarefa com o objetivo da criação de um sistema de matrícula para matricular e
 
 ## Crie o modelo lógico do exercício.
 
+## inserção de Dados e testes
+![image](https://github.com/giovaniruiz03/Sistema-Universidade/assets/145368122/fb13df14-75f6-49ee-b0a8-3c072b66acc4)
+![image](https://github.com/giovaniruiz03/Sistema-Universidade/assets/145368122/4e0889a3-ea7d-406b-b0bd-795494cf13c6)
+
+
 
 
 
