@@ -13,9 +13,8 @@ CREATE TABLE tb_curso (
 );
 
 CREATE TABLE tb_aluno_curso (
-  id_aluno INT NOT NULL,
+  id_aluno INT NOT NULL PRIMARY KEY,
   id_curso INT NOT NULL,
-  PRIMARY KEY (id_aluno, id_curso),
   FOREIGN KEY (id_aluno) REFERENCES tb_aluno (id_aluno),
   FOREIGN KEY (id_curso) REFERENCES tb_curso (id_curso)
 );
@@ -33,54 +32,29 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE inserir_curso (
-  IN nome_curso VARCHAR(80),
-  IN area_curso VARCHAR(60)
-)
-BEGIN
-  INSERT INTO tb_curso (nome_curso, area_curso) VALUES (nome_curso, area_curso);
-END $$
-
-DELIMITER $$
-
-CREATE FUNCTION obter_curso_por_nome (
-  nome_curso_param VARCHAR(80)
-)
-RETURNS INT
-BEGIN
-  RETURN (
-    SELECT id_curso
-    FROM tb_curso
-    WHERE nome_curso = nome_curso_param
-  );
-END $$
-
-DELIMITER ;
-
-DELIMITER $$
-
 CREATE PROCEDURE matricular_aluno (
-  IN id_aluno INT,
-  IN id_curso INT
+  IN id_aluno_mat INT,
+  IN id_curso_mat INT
 )
 BEGIN
+  DECLARE matriculado_anteriormente INT;
+
   -- Verifica se o aluno já está matriculado no curso
-  IF (
-    SELECT COUNT(*)
-    FROM tb_aluno_curso
-    WHERE id_aluno = id_aluno
-    AND id_curso = id_curso
-  ) > 0 THEN
-    -- O aluno já está matriculado no curso
-    BEGIN
-    END;
+  SELECT COUNT(*)
+  INTO matriculado_anteriormente
+  FROM tb_aluno_curso
+  WHERE id_aluno = id_aluno_mat
+  AND id_curso = id_curso_mat;
+
+  IF matriculado_anteriormente > 0 THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'O aluno já está matriculado neste curso';
   ELSE
     INSERT INTO tb_aluno_curso (id_aluno, id_curso) VALUES (id_aluno, id_curso);
   END IF;
 END $$
 
 DELIMITER ;
-
 
 INSERT INTO tb_aluno (nome_aluno, sobrenome, matriculado) VALUES
   ('João', 'Silva', 0),
